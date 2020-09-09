@@ -1,5 +1,6 @@
 const sequelize = require('./sequilize');
 const Cidade = sequelize.import('./Cidade');
+const Cliente = sequelize.import('./Cliente');
 
 module.exports = (sequelize, DataTypes) => {
     const Estado = sequelize.define('Estado', {
@@ -10,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
     });
 
 
-    Estado.hasMany(Cidade, { foreignKey: 'Estado_Id' })
+    Estado.hasMany(Cidade)
+    Estado.hasMany(Cliente)
 
     return Estado;
 }

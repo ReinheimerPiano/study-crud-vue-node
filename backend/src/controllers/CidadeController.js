@@ -19,7 +19,7 @@ module.exports = {
     async getEstadoId(req, res) {
         const { id } = req.params;
         const CidadeRequest = await Cidade.findAll({
-            where: { Estado_Id: id }
+            where: { EstadoId: id }
         })
         return res.status(200)
             .json(CidadeRequest);
