@@ -15,7 +15,8 @@
                 v-bind="attrs"
                 v-on="on"
                 @click="createItem"
-              >Cadastrar</v-btn>
+                >Cadastrar</v-btn
+              >
             </template>
             <v-card>
               <v-card-title>
@@ -26,47 +27,47 @@
                 <v-container>
                   <v-row>
                     <v-col cols="12" sm="2" md="2">
-                      <v-text-field disabled v-model="editedItem.id" label="Cod"></v-text-field>
+                      <v-text-field
+                        disabled
+                        v-model="editedItem.id"
+                        label="Cod"
+                      ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="10" md="10">
-                      <v-text-field :counter="250" required v-model="editedItem.Nome" label="Nome"></v-text-field>
+                      <v-text-field
+                        :counter="250"
+                        :rules="nameRules"
+                        required
+                        v-model="editedItem.Nome"
+                        label="Nome"
+                      ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
                       <v-text-field
                         :counter="250"
+                        :rules="emailRules"
                         required
                         v-model="editedItem.Email"
                         label="Email"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
-                      <v-menu
-                        ref="menu"
+                      <v-label>Data de Nascimento</v-label>
+                      <v-date-picker
                         v-model="editedItem.Data_Nascimento"
-                        :close-on-content-click="false"
-                        :return-value.sync="date"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="290px"
-                      >
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                            v-model="date"
-                            label="Data de Nasc"
-                            readonly
-                            v-bind="attrs"
-                            v-on="on"
-                          ></v-text-field>
-                        </template>
-                        <v-date-picker v-model="date" no-title scrollable locale="pt-BR">
-                          <v-spacer></v-spacer>
-                          <v-btn text color="primary" @click="menu = false">Cancelar</v-btn>
-                          <v-btn text color="primary" @click="$refs.menu.save(date)">OK</v-btn>
-                        </v-date-picker>
-                      </v-menu>
+                        locale="pt-BR"
+                        full-width
+                        :landscape="$vuetify.breakpoint.smAndUp"
+                      ></v-date-picker>
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
-                      <v-text-field :counter="11" required v-model="editedItem.CPF" label="CPF"></v-text-field>
+                      <v-text-field
+                        :counter="11"
+                        required
+                        v-model="editedItem.CPF"
+                        label="CPF"
+                        @keypress="isNumber($event)"
+                      ></v-text-field>
                     </v-col>
                     <v-col cols="10" sm="10" md="10">
                       <v-text-field
@@ -77,31 +78,35 @@
                       ></v-text-field>
                     </v-col>
                     <v-col cols="2" sm="2" md="2">
-                      <v-text-field s required v-model="editedItem.Numero" label="Nº"></v-text-field>
+                      <v-text-field
+                        s
+                        required
+                        v-model="editedItem.Numero"
+                        label="Nº"
+                        @keypress="isNumber($event)"
+                      ></v-text-field>
                     </v-col>
 
                     <v-col cols="12" sm="12" md="12">
                       <v-select
-                        v-on:change="getCidadesEstIdApi($event)"
-                        :value.sync="states"
                         :v-model="editedItem.EstadoId"
-                        :items="estados.map((obj) => (obj))"
-                        :item-text="(obj) => (obj)['Nome']"
-                        :item-value="(obj) => (obj)['id']"
+                        :items="estados.map(obj => obj)"
+                        :item-text="obj => obj['Nome']"
+                        :item-value="obj => obj['id']"
                         :return-object="false"
                         label="Selecione o Estado desejado"
+                        @change="getCidadesEstIdApi($event)"
                       ></v-select>
                     </v-col>
 
                     <v-col cols="12" sm="12" md="12">
                       <v-select
-                        id="cidades"
-                        :v-model="editedItem.CidadeId"
-                        :items="cidades.map((obj) => (obj))"
-                        :item-text="(obj) => (obj)['Nome']"
-                        :item-value="(obj) => (obj)['id']"
+                        v-model="editedItem.CidadeId"
+                        :items="cidades.map(obj => obj)"
+                        :item-text="obj => obj['Nome']"
+                        :item-value="obj => obj['id']"
                         :return-object="false"
-                        label="Selecione a Cidade desejada"
+                        label="Selecione a Cidade desejado"
                       ></v-select>
                     </v-col>
                   </v-row>
@@ -110,7 +115,9 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">Cancelar</v-btn>
+                <v-btn color="blue darken-1" text @click="close"
+                  >Cancelar</v-btn
+                >
                 <v-btn color="blue darken-1" text @click="save">Salvar</v-btn>
               </v-card-actions>
             </v-card>
@@ -130,6 +137,8 @@
 <script>
 import axios from "axios";
 const baseUrl = "http://localhost:3000/";
+let data = new Date().toISOString().substr(0, 10);
+
 export default {
   data() {
     return {
@@ -139,7 +148,7 @@ export default {
         { text: "Email", value: "Email" },
         { text: "Data Nasc", value: "Data_Nascimento" },
         { text: "CPF", value: "CPF" },
-        { text: "Ações", value: "actions", sortable: false },
+        { text: "Ações", value: "actions", sortable: false }
       ],
       clientes: [],
       estados: [],
@@ -148,52 +157,72 @@ export default {
       estado: {
         id: 0,
         Nome: "",
-        Abreviatura: "",
+        Abreviatura: ""
       },
       cidade: {
         id: 0,
         Nome: "",
-        Abreviatura: "",
+        EstadoId: 0
       },
       editedItem: {
         Nome: "",
         Email: "",
-        Data_Nascimento: "",
+        Data_Nascimento: data,
         CPF: "",
         Logradouro: "",
-        Numero: "",
         EstadoId: 0,
-        CidadeId: 0,
+        Numero: "",
+        CidadeId: 0
       },
       defaultItem: {
         Nome: "",
         Email: "",
-        Data_Nascimento: "",
+        Data_Nascimento: data,
         CPF: "",
         Logradouro: "",
-        Numero: "",
         EstadoId: 0,
-        CidadeId: 0,
+        Numero: "",
+        CidadeId: 0
       },
+      valid: true,
+      nameRules: [
+        v => !!v || "Nome é obrigatório",
+        v => (v && v.length <= 250) || "Namo deve ter menos que 250c"
+      ],
+      emailRules: [
+        v => !!v || "E-mail é obrigatório",
+        v => /.+@.+\..+/.test(v) || "E-mail não é valido"
+      ]
     };
   },
   watch: {
     options: {
       handler() {
         this.lendoDadosApi();
-      },
+      }
     },
-    deep: true,
+    deep: true
   },
   methods: {
+
+    isNumber(evt) {
+      evt = (evt) ? evt : window.event;
+      var charCode = (evt.which) ? evt.which : evt.keyCode;
+      if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+        evt.preventDefault();;
+      } else {
+        return true;
+      }
+    },
+
     lendoDadosApi() {
       this.loading = true;
       axios
         .get(baseUrl + "Cliente")
-        .then((response) => {
+        .then(response => {
           this.clientes = response.data;
         })
-        .catch((error) => {
+        .catch(error => {
           if (!error.response) {
             this.errorStatus = "Error: Network Error";
           } else {
@@ -205,10 +234,10 @@ export default {
     listaEstadosApi() {
       axios
         .get(baseUrl + "Estado")
-        .then((response) => {
+        .then(response => {
           this.estados = response.data;
         })
-        .catch((error) => {
+        .catch(error => {
           if (!error.response) {
             // network error
             this.errorStatus = "Error: Network Error";
@@ -219,13 +248,16 @@ export default {
     },
 
     async getCidadesEstIdApi(event) {
-      let id = event
+      let id = event;
+      console.log(id);
+      this.editedItem.EstadoId = id;
+      console.log(this.editedItem.EstadoId);
       let est = await axios
         .get(baseUrl + "cidade/estado/" + id)
-        .then((response) => {
+        .then(response => {
           this.cidades = response.data;
         })
-        .catch((error) => {
+        .catch(error => {
           if (!error.response) {
             // network error
             this.errorStatus = "Error: Network Error";
@@ -251,7 +283,7 @@ export default {
       confirm("Tem certeza que deseja Excluir " + item.Nome + "?") &&
         this.clientes.splice(index, 1);
       this.loading = true;
-      axios.delete(baseUrl + "Cidade/" + item.id).catch((error) => {
+      axios.delete(baseUrl + "Cidade/" + item.id).catch(error => {
         if (!error.response) {
           // network error
           this.errorStatus = "Error: Network Error";
@@ -272,23 +304,22 @@ export default {
     save() {
       let th = this;
       let index = this.editedIndex;
-      console.log(this.editedItem.EstadoId);
       if (this.editedIndex > -1) {
         axios
           .put(baseUrl + "Cliente/" + this.editedItem.id, {
+            EstadoId: this.editedItem.EstadoId,
+            CidadeId: this.editedItem.CidadeId,
             Nome: this.editedItem.Nome,
             Email: this.editedItem.Email,
             Data_Nascimento: this.editedItem.Data_Nascimento,
             CPF: this.editedItem.CPF,
             Logradouro: this.editedItem.Logradouro,
-            Numero: this.editedItem.Numero,
-            EstadoId: this.editedItem.EstadoId,
-            CidadeId: this.editedItem.CidadeId,
+            Numero: this.editedItem.Numero
           })
-          .then(function (response) {
+          .then(function(response) {
             Object.assign(th.clientes[index], response.data.updatedAffectLines);
           })
-          .catch((error) => {
+          .catch(error => {
             if (!error.response) {
               // network error
               this.errorStatus = "Error: Network Error";
@@ -299,19 +330,19 @@ export default {
       } else {
         axios
           .post(baseUrl + "Cliente", {
+            EstadoId: this.editedItem.EstadoId,
+            CidadeId: this.editedItem.CidadeId,
             Nome: this.editedItem.Nome,
             Email: this.editedItem.Email,
             Data_Nascimento: this.editedItem.Data_Nascimento,
             CPF: this.editedItem.CPF,
             Logradouro: this.editedItem.Logradouro,
-            Numero: this.editedItem.Numero,
-            EstadoId: this.editedItem.EstadoId,
-            CidadeId: this.editedItem.CidadeId,
+            Numero: this.editedItem.Numero
           })
-          .then(function (response) {
+          .then(function(response) {
             th.clientes.push(response.data);
           })
-          .catch((error) => {
+          .catch(error => {
             if (!error.response) {
               // network error
               this.errorStatus = "Error: Network Error";
@@ -321,10 +352,10 @@ export default {
           });
       }
       this.close();
-    },
+    }
   },
   async mounted() {
     this.lendoDadosApi();
-  },
+  }
 };
 </script>

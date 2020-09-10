@@ -111,8 +111,6 @@ export default {
         .get(baseUrl + "Cidade")
         .then((response) => {
           this.cidades = response.data;
-        console.log(this.cidades)
-
         })
         .catch((error) => {
           if (!error.response) {
@@ -121,10 +119,6 @@ export default {
             this.errorStatus = error.response.data.message;
           }
         });
-        console.log(this.cidades)
-        this.cidades.map((e) => {e.Estado_Nome = this.getEstadosIdApi(e.EstadoId)})
-        console.log(this.cidades)
-
     },
 
     listaEstadosApi() {
@@ -132,22 +126,6 @@ export default {
         .get(baseUrl + "Estado")
         .then((response) => {
           this.estados = response.data;
-        })
-        .catch((error) => {
-          if (!error.response) {
-            // network error
-            this.errorStatus = "Error: Network Error";
-          } else {
-            this.errorStatus = error.response.data.message;
-          }
-        });
-    },
-
-    async getEstadosIdApi(id) {
-      let est = await axios.get(baseUrl + "Estado/" + id)
-        .then((response) => {
-          console.log(response.data.Nome)
-          return response.data.Nome;
         })
         .catch((error) => {
           if (!error.response) {
@@ -196,12 +174,10 @@ export default {
     save() {
       let th = this;
       let index = this.editedIndex;
-      console.log(this.editedItem.EstadoId);
       if (this.editedIndex > -1) {
         axios
           .put(baseUrl + "Cidade/" + this.editedItem.id, {
             Nome: this.editedItem.Nome,
-            Cidade_Id: this.editedItem.Cidade_Id,
             EstadoId: this.editedItem.EstadoId,
           })
           .then(function (response) {
@@ -219,7 +195,6 @@ export default {
         axios
           .post(baseUrl + "Cidade", {
             Nome: this.editedItem.Nome,
-            Cidade_Id: this.editedItem.Cidade_Id,
             EstadoId: this.editedItem.EstadoId,
           })
           .then(function (response) {
